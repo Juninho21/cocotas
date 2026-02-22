@@ -139,6 +139,13 @@ function HomeDeck() {
         query = query.eq('city', cityFilter);
       }
 
+      // Filtro de preferência
+      if (myData.preference === 'Homens') {
+        query = query.eq('gender', 'Homem');
+      } else if (myData.preference === 'Mulheres') {
+        query = query.eq('gender', 'Mulher');
+      }
+
       const { data, error } = await query;
 
       if (error) throw error;

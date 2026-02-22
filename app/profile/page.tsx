@@ -104,6 +104,7 @@ export default function ProfilePage() {
         smoke: '',
         exercise: '',
         social: '',
+        preference: 'Todos',
     });
 
     const { user } = useAuth();
@@ -145,6 +146,7 @@ export default function ProfilePage() {
                         smoke: data.smoke || '',
                         exercise: data.exercise || '',
                         social: data.social || '',
+                        preference: data.preference || 'Todos',
                     });
 
                     if (data.images && data.images.length > 0) {
@@ -196,6 +198,7 @@ export default function ProfilePage() {
                     smoke: profileData.smoke,
                     exercise: profileData.exercise,
                     social: profileData.social,
+                    preference: profileData.preference,
                     images: validPhotos,
                     updated_at: new Date().toISOString(),
                 });
@@ -387,13 +390,20 @@ export default function ProfilePage() {
 
                             {/* Sexo */}
                             <SectionHeader title="Sexo" />
-                            <div style={{ padding: '16px', backgroundColor: '#1c1c1e', borderRadius: '16px' }}>
-                                <input
-                                    value={profileData.gender}
-                                    onChange={(e) => updateField('gender', e.target.value)}
-                                    style={{ background: 'none', border: 'none', color: '#fff', fontSize: '16px', fontWeight: '700', outline: 'none', width: '100%', cursor: 'text' }}
-                                    placeholder="Seu gênero"
-                                />
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                                {['Homem', 'Mulher'].map(g => (
+                                    <button
+                                        key={g}
+                                        onClick={() => updateField('gender', g)}
+                                        style={{
+                                            flex: 1, padding: '12px', borderRadius: '12px', border: 'none',
+                                            backgroundColor: profileData.gender === g ? '#1786ff' : '#1c1c1e',
+                                            color: '#fff', fontWeight: '800', fontSize: '14px', cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}>
+                                        {g}
+                                    </button>
+                                ))}
                             </div>
 
                             {/* Orientação */}
@@ -412,6 +422,24 @@ export default function ProfilePage() {
                             <div style={{ backgroundColor: '#1c1c1e', borderRadius: '16px', padding: '0 16px' }}>
                                 <ControlToggle label="Não mostrar minha idade" field="hideAge" profileData={profileData} updateField={updateField} />
                                 <ControlToggle label="Não mostrar minha cidade" field="hideCity" profileData={profileData} updateField={updateField} />
+                            </div>
+
+                            {/* Preferência de busca */}
+                            <SectionHeader title="Mostrar" />
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                                {['Homens', 'Mulheres', 'Todos'].map(pref => (
+                                    <button
+                                        key={pref}
+                                        onClick={() => updateField('preference', pref)}
+                                        style={{
+                                            flex: 1, padding: '12px', borderRadius: '12px', border: 'none',
+                                            backgroundColor: profileData.preference === pref ? '#1786ff' : '#1c1c1e',
+                                            color: '#fff', fontWeight: '800', fontSize: '14px', cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}>
+                                        {pref}
+                                    </button>
+                                ))}
                             </div>
 
                             {/* Cidade */}
