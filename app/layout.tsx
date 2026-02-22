@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import ConditionalHeader from "@/components/ConditionalHeader";
+import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Cocotas - Deslize e Conecte",
@@ -14,8 +16,6 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-import ConditionalHeader from "@/components/ConditionalHeader";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,8 +24,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <ConditionalHeader />
-        {children}
+        <AuthProvider>
+          <ConditionalHeader />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

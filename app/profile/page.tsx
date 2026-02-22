@@ -6,12 +6,10 @@ import {
     Settings as SettingsIcon, Edit3, Camera, X, Plus, ChevronLeft,
     Music, Moon, GraduationCap, Baby, MessageCircle,
     Heart, Dog, GlassWater as Wine, Cigarette, Dumbbell, AtSign, MapPin,
-    CheckCircle, Loader
+    CheckCircle, Loader, User
 } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/lib/supabase';
-
-// ID fixo do usuário logado (mudar depois pela sessão real)
-const MY_USER_ID = '00000000-0000-0000-0000-000000000000';
 
 // ─── Sub-componentes fora do escopo principal (evita perda de foco) ──────────
 
@@ -108,15 +106,18 @@ export default function ProfilePage() {
         social: '',
     });
 
+    const { user } = useAuth();
+
     // ── Carregar dados do Supabase ao montar ──────────────────────────────────
     useEffect(() => {
         const loadProfile = async () => {
+            if (!user) return;
             setIsLoading(true);
             try {
                 const { data, error } = await supabase
                     .from('profiles')
                     .select('*')
-                    .eq('id', MY_USER_ID)
+                    .eq('id', user.id)
                     .single();
 
                 if (error) throw error;
@@ -160,10 +161,11 @@ export default function ProfilePage() {
         };
 
         loadProfile();
-    }, []);
+    }, [user]);
 
     // ── Salvar dados no Supabase ──────────────────────────────────────────────
     const handleSave = async () => {
+        if (!user) return;
         setIsSaving(true);
         setSaveSuccess(false);
         try {
@@ -172,7 +174,7 @@ export default function ProfilePage() {
             const { error } = await supabase
                 .from('profiles')
                 .upsert({
-                    id: MY_USER_ID,
+                    id: user.id,
                     full_name: profileData.name,
                     age: profileData.age,
                     city: profileData.city,
@@ -322,6 +324,26 @@ export default function ProfilePage() {
                                         )}
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* Dados Básicos */}
+                            <SectionHeader title="Informações Básicas" />
+                            <div style={{ backgroundColor: '#1c1c1e', borderRadius: '16px', padding: '0 16px', marginBottom: '12px' }}>
+                                <EditableListItem icon={User} label="Nome" field="name" profileData={profileData} updateField={updateField} />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <span style={{ fontSize: '20px' }}>🎂</span>
+                                        <span style={{ fontSize: '16px', fontWeight: '700' }}>Idade</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        value={profileData.age}
+                                        onChange={(e) => updateField('age', parseInt(e.target.value) || '')}
+                                        style={{ background: 'none', border: 'none', color: '#fff', fontSize: '14px', textAlign: 'right', outline: 'none', width: '130px', cursor: 'text' }}
+                                        min="18"
+                                        max="100"
+                                    />
+                                </div>
                             </div>
 
                             {/* Bio */}

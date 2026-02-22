@@ -71,14 +71,14 @@ export default function MatchCard({ profile, onSwipe, isTopCard }: MatchCardProp
                     style={{ opacity: useTransform(x, [0, 50], [0, 1]) }}
                     className="indicator indicator-like"
                 >
-                    <span>LIKE</span>
+                    <span>Quero</span>
                 </motion.div>
 
                 <motion.div
                     style={{ opacity: useTransform(x, [0, -50], [0, 1]) }}
                     className="indicator indicator-nope"
                 >
-                    <span>NOPE</span>
+                    <span>Não quero</span>
                 </motion.div>
             </div>
         </motion.div>

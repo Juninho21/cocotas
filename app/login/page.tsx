@@ -1,25 +1,119 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Flame, Mail, Lock, User, Github, Chrome, ArrowRight, Eye, EyeOff, MapPin } from 'lucide-react';
+import { Flame, Mail, Lock, User, ArrowRight, Eye, EyeOff, MapPin, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [formData, setFormData] = useState({
+        name: '',
+        city: '',
+        age: '',
+        email: '',
+        password: '',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        setError('');
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simular login/cadastro
-        setTimeout(() => {
+        setError('');
+        setSuccessMsg('');
+
+        const email = formData.email.trim();
+        const password = formData.password;
+
+        try {
+            if (isLogin) {
+                console.log('Tentando LOGIN com:', email);
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (signInError) {
+                    console.error('Erro detalhado do Supabase (Login):', signInError);
+                    if (signInError.message.includes('Invalid login credentials')) {
+                        setError('E-mail ou senha incorretos.');
+                    } else if (signInError.message.includes('Email not confirmed')) {
+                        setError('Verifique seu e-mail para confirmar a conta.');
+                    } else {
+                        setError(signInError.message);
+                    }
+                    return;
+                }
+
+                console.log('Login bem-sucedido!');
+                router.push('/');
+                router.refresh();
+            } else {
+                console.log('Tentando CADASTRO com:', email);
+                if (password.length < 6) {
+                    setError('A senha deve ter pelo menos 6 caracteres.');
+                    return;
+                }
+
+                const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: formData.name,
+                            city: formData.city,
+                            age: parseInt(formData.age),
+                        },
+                    },
+                });
+
+                if (signUpError) {
+                    console.error('Erro detalhado do Supabase (Cadastro):', signUpError);
+                    setError(signUpError.message);
+                    return;
+                }
+
+                if (signUpData.user) {
+                    console.log('Usuário criado no Auth, criando perfil...');
+                    const { error: profileError } = await supabase.from('profiles').upsert({
+                        id: signUpData.user.id,
+                        full_name: formData.name,
+                        city: formData.city,
+                        age: parseInt(formData.age) || 18,
+                        updated_at: new Date().toISOString(),
+                    });
+
+                    if (profileError) console.error('Erro ao criar perfil:', profileError);
+                }
+
+                if (signUpData.session) {
+                    console.log('Cadastro e Login automáticos realizados!');
+                    router.push('/');
+                    router.refresh();
+                } else {
+                    console.log('Cadastro realizado, aguardando confirmação de e-mail.');
+                    setSuccessMsg('Conta criada! Verifique seu e-mail para confirmar.');
+                    setIsLogin(true);
+                    setFormData(prev => ({ ...prev, password: '' }));
+                }
+            }
+        } catch (err: any) {
+            console.error('ERRO CATASTRÓFICO:', err);
+            setError('Erro inesperado: ' + (err?.message || 'Verifique o console'));
+        } finally {
             setIsLoading(false);
-            router.push('/');
-        }, 2000);
+        }
     };
 
     return (
@@ -53,18 +147,45 @@ export default function LoginPage() {
                     {/* Tabs */}
                     <div className="login-tabs">
                         <button
-                            onClick={() => setIsLogin(true)}
+                            type="button"
+                            onClick={() => { setIsLogin(true); setError(''); setSuccessMsg(''); }}
                             className={`login-tab ${isLogin ? 'active' : ''}`}
                         >
                             Entrar
                         </button>
                         <button
-                            onClick={() => setIsLogin(false)}
+                            type="button"
+                            onClick={() => { setIsLogin(false); setError(''); setSuccessMsg(''); }}
                             className={`login-tab ${!isLogin ? 'active' : ''}`}
                         >
                             Cadastrar
                         </button>
                     </div>
+
+                    {/* Mensagem de erro */}
+                    <AnimatePresence>
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="error-banner"
+                            >
+                                <AlertCircle size={16} />
+                                <span>{error}</span>
+                            </motion.div>
+                        )}
+                        {successMsg && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="success-banner"
+                            >
+                                <span>✅ {successMsg}</span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="login-form">
@@ -80,7 +201,14 @@ export default function LoginPage() {
                                     <label>Nome Completo</label>
                                     <div className="input-wrapper">
                                         <User size={18} className="input-icon" />
-                                        <input type="text" placeholder="Seu nome" required={!isLogin} />
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            placeholder="Seu nome"
+                                            required={!isLogin}
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                        />
                                     </div>
                                 </motion.div>
                             )}
@@ -95,7 +223,39 @@ export default function LoginPage() {
                                     <label>Cidade onde vive</label>
                                     <div className="input-wrapper">
                                         <MapPin size={18} className="input-icon" />
-                                        <input type="text" placeholder="Sua cidade" required={!isLogin} />
+                                        <input
+                                            type="text"
+                                            name="city"
+                                            placeholder="Sua cidade"
+                                            required={!isLogin}
+                                            value={formData.city}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </motion.div>
+                            )}
+                            {!isLogin && (
+                                <motion.div
+                                    key="age"
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="input-group"
+                                >
+                                    <label>Sua Idade</label>
+                                    <div className="input-wrapper">
+                                        <div className="input-icon-text" style={{ position: 'absolute', left: '16px', color: '#555', fontWeight: 'bold' }}>18</div>
+                                        <input
+                                            type="number"
+                                            name="age"
+                                            placeholder="Ex: 25"
+                                            required={!isLogin}
+                                            min="18"
+                                            max="100"
+                                            value={formData.age}
+                                            onChange={handleChange}
+                                            style={{ paddingLeft: '48px' }}
+                                        />
                                     </div>
                                 </motion.div>
                             )}
@@ -105,7 +265,14 @@ export default function LoginPage() {
                             <label>E-mail</label>
                             <div className="input-wrapper">
                                 <Mail size={18} className="input-icon" />
-                                <input type="email" placeholder="email@exemplo.com" required />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="email@exemplo.com"
+                                    required
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
 
@@ -115,8 +282,11 @@ export default function LoginPage() {
                                 <Lock size={18} className="input-icon" />
                                 <input
                                     type={showPassword ? "text" : "password"}
+                                    name="password"
                                     placeholder="••••••••"
                                     required
+                                    value={formData.password}
+                                    onChange={handleChange}
                                 />
                                 <button
                                     type="button"
@@ -142,9 +312,9 @@ export default function LoginPage() {
 
                     {/* Footer */}
                     <p className="login-footer">
-                        Ao clicar em {isLogin ? 'Entrar' : 'Criar Conta'}, você concorda com nossos{' '}
-                        <Link href="#">Termos de Serviço</Link> e{' '}
-                        <Link href="#">Política de Privacidade</Link>.
+                        Ao {isLogin ? 'entrar' : 'criar conta'}, você concorda com nossos{' '}
+                        <a href="#">Termos de Serviço</a> e{' '}
+                        <a href="#">Política de Privacidade</a>.
                     </p>
                 </motion.div>
             </main>
@@ -273,6 +443,35 @@ export default function LoginPage() {
                     color: #fff;
                 }
 
+                .error-banner {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: rgba(255, 68, 88, 0.15);
+                    border: 1px solid rgba(255, 68, 88, 0.3);
+                    color: #ff6b7a;
+                    padding: 10px 14px;
+                    border-radius: 12px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    text-align: left;
+                    margin-bottom: 8px;
+                    overflow: hidden;
+                }
+
+                .success-banner {
+                    background: rgba(33, 208, 124, 0.15);
+                    border: 1px solid rgba(33, 208, 124, 0.3);
+                    color: #21d07c;
+                    padding: 10px 14px;
+                    border-radius: 12px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    text-align: left;
+                    margin-bottom: 8px;
+                    overflow: hidden;
+                }
+
                 .login-form {
                     display: flex;
                     flex-direction: column;
@@ -284,6 +483,7 @@ export default function LoginPage() {
                     flex-direction: column;
                     gap: 8px;
                     text-align: left;
+                    overflow: hidden;
                 }
 
                 .input-group label {
@@ -360,57 +560,6 @@ export default function LoginPage() {
                     opacity: 0.7;
                     cursor: not-allowed;
                     transform: none;
-                }
-
-                .login-divider {
-                    position: relative;
-                    margin: 30px 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .login-divider::before,
-                .login-divider::after {
-                    content: '';
-                    flex: 1;
-                    height: 1px;
-                    background: rgba(255, 255, 255, 0.1);
-                }
-
-                .login-divider span {
-                    padding: 0 16px;
-                    color: #555;
-                    font-size: 12px;
-                    text-transform: uppercase;
-                    font-weight: 700;
-                }
-
-                .social-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 12px;
-                }
-
-                .social-btn {
-                    padding: 12px;
-                    border-radius: 14px;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    background: rgba(255, 255, 255, 0.05);
-                    color: #fff;
-                    font-size: 14px;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-
-                .social-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-color: rgba(255, 255, 255, 0.2);
                 }
 
                 .login-footer {
