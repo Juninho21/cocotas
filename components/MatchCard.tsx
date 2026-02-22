@@ -5,12 +5,13 @@ import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 
 interface Profile {
-    id: number;
+    id: string;
     name: string;
     age: number;
     image: string;
     bio: string;
     distance: string;
+    city?: string;
 }
 
 interface MatchCardProps {
