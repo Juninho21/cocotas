@@ -17,7 +17,7 @@ const SectionHeader = ({ title, badge }: { title: string; badge?: string }) => (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '32px', marginBottom: '12px' }}>
         <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0 }}>{title}</h2>
         {badge && (
-            <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff4458', background: 'rgba(255,68,88,0.1)', padding: '2px 8px', borderRadius: '100px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '800', color: '#1786ff', background: 'rgba(23, 134, 255, 0.1)', padding: '2px 8px', borderRadius: '100px' }}>
                 {badge}
             </span>
         )}
@@ -57,7 +57,7 @@ const ControlToggle = ({
                 onClick={() => updateField(field, !active)}
                 style={{
                     width: '44px', height: '24px', flexShrink: 0,
-                    backgroundColor: active ? '#ff4458' : '#3a3a3c',
+                    backgroundColor: active ? '#1786ff' : '#3a3a3c',
                     borderRadius: '12px', position: 'relative', cursor: 'pointer', transition: 'background 0.3s'
                 }}>
                 <div style={{
@@ -249,7 +249,7 @@ export default function ProfilePage() {
         setPhotos(prev => {
             const updated = [...prev];
             updated[index] = null;
-            const filtered = updated.filter(p => p !== null);
+            const filtered: (string | null)[] = updated.filter(p => p !== null);
             while (filtered.length < 6) filtered.push(null);
             return filtered;
         });
@@ -259,7 +259,7 @@ export default function ProfilePage() {
     if (isLoading) {
         return (
             <main style={{ backgroundColor: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ width: '48px', height: '48px', border: '3px solid #1c1c1e', borderTopColor: '#ff4458', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{ width: '48px', height: '48px', border: '3px solid #1c1c1e', borderTopColor: '#1786ff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 <p style={{ color: '#8e8e93', fontSize: '14px', fontWeight: '700' }}>Carregando perfil...</p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </main>
@@ -273,7 +273,7 @@ export default function ProfilePage() {
                 {/* Header */}
                 <div style={{ position: 'sticky', top: 0, zIndex: 100, backgroundColor: '#000', borderBottom: '1px solid #1c1c1e' }}>
                     <div style={{ display: 'flex', alignItems: 'center', padding: '20px' }}>
-                        <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: '#ff4458', cursor: 'pointer', padding: '4px' }}>
+                        <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: '#1786ff', cursor: 'pointer', padding: '4px' }}>
                             <ChevronLeft size={28} />
                         </button>
                         <h1 style={{ flex: 1, textAlign: 'center', fontSize: '18px', fontWeight: '800', marginRight: '28px' }}>Editar perfil</h1>
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                                     flex: 1, padding: '14px', border: 'none', background: 'none',
                                     color: activeTab === tab ? '#fff' : '#8e8e93',
                                     fontWeight: '800', fontSize: '15px',
-                                    borderBottom: activeTab === tab ? '2px solid #ff4458' : '2px solid transparent',
+                                    borderBottom: activeTab === tab ? '2px solid #1786ff' : '2px solid transparent',
                                     cursor: 'pointer', transition: 'all 0.2s'
                                 }}>
                                 {tab === 'edit' ? 'Editar' : 'Visualizar'}
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                                             </>
                                         ) : (
                                             <button onClick={handleAddPhoto} style={{ width: '100%', height: '100%', background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(45deg,#ff4458,#ff7854)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(45deg,#1786ff,#00c2ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                                                     <Plus size={18} strokeWidth={3} />
                                                 </div>
                                             </button>
@@ -475,7 +475,7 @@ export default function ProfilePage() {
                                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '12px' }}>Interesses</h3>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                             {profileData.interests.split(',').map((tag, i) => tag.trim() && (
-                                                <span key={i} style={{ padding: '6px 14px', borderRadius: '100px', border: '1px solid #ff4458', color: '#ff4458', fontSize: '13px', fontWeight: '700' }}>
+                                                <span key={i} style={{ padding: '6px 14px', borderRadius: '100px', border: '1px solid #1786ff', color: '#1786ff', fontSize: '13px', fontWeight: '700' }}>
                                                     {tag.trim()}
                                                 </span>
                                             ))}
@@ -498,11 +498,11 @@ export default function ProfilePage() {
                             width: '100%', padding: '16px', borderRadius: '100px', border: 'none',
                             background: saveSuccess
                                 ? 'linear-gradient(45deg,#21d07c,#00b360)'
-                                : 'linear-gradient(45deg,#ff4458,#ff7854)',
+                                : 'linear-gradient(45deg,#1786ff,#00c2ff)',
                             color: '#fff', fontWeight: '900', fontSize: '16px',
                             boxShadow: saveSuccess
                                 ? '0 10px 30px rgba(33,208,124,0.4)'
-                                : '0 10px 30px rgba(255,68,88,0.4)',
+                                : '0 10px 30px rgba(23, 134, 255, 0.4)',
                             textTransform: 'uppercase', cursor: isSaving ? 'not-allowed' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                             opacity: isSaving ? 0.85 : 1, transition: 'background 0.3s, box-shadow 0.3s'
@@ -566,7 +566,7 @@ export default function ProfilePage() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', transform: 'translateY(-10px)' }}>
                         <button
                             onClick={() => setIsEditing(true)}
-                            style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(45deg,#ff4458,#ff7854)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 10px 20px rgba(255,68,88,0.3)', cursor: 'pointer' }}>
+                            style={{ width: '70px', height: '70px', borderRadius: '50%', background: 'linear-gradient(45deg,#1786ff,#00c2ff)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 10px 20px rgba(23, 134, 255, 0.3)', cursor: 'pointer' }}>
                             <Camera size={28} />
                         </button>
                         <span style={{ fontSize: '12px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Mídia</span>
