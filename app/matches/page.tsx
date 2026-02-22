@@ -171,8 +171,8 @@ export default function MatchesPage() {
                 <div style={{ flex: 1, paddingLeft: '12px', paddingRight: '12px', paddingTop: '20px', paddingBottom: '180px', overflowY: 'auto' }}>
                     {loading ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 0', gap: '16px' }}>
-                            <div className="animate-spin text-pink-500"><Flame size={32} /></div>
-                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#8e8e93', tracking: '0.1em' }}>CARREGANDO PERFIS...</span>
+                            <div className="animate-spin" style={{ color: '#1786ff' }}><Flame size={32} /></div>
+                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#8e8e93', letterSpacing: '0.1em' }}>CARREGANDO PERFIS...</span>
                         </div>
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
