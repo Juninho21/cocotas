@@ -347,7 +347,7 @@ export default function LoginPage() {
                 .blob-1 {
                     width: 400px;
                     height: 400px;
-                    background: #ff4458;
+                    background: #1786ff;
                     top: -100px;
                     left: -100px;
                     animation: float 10s infinite alternate;
@@ -356,7 +356,7 @@ export default function LoginPage() {
                 .blob-2 {
                     width: 300px;
                     height: 300px;
-                    background: #ff7854;
+                    background: #00c2ff;
                     bottom: -50px;
                     right: -50px;
                     animation: float 8s infinite alternate-reverse;
@@ -365,7 +365,7 @@ export default function LoginPage() {
                 .blob-3 {
                     width: 250px;
                     height: 250px;
-                    background: #c83b5d;
+                    background: #1161cc;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
@@ -393,13 +393,13 @@ export default function LoginPage() {
                 .login-logo-container {
                     width: 80px;
                     height: 80px;
-                    background: linear-gradient(45deg, #ff4458, #ff7854);
+                    background: linear-gradient(45deg, #1786ff, #00c2ff);
                     border-radius: 20px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     margin: 0 auto 16px;
-                    box-shadow: 0 10px 30px rgba(255, 68, 88, 0.3);
+                    box-shadow: 0 10px 30px rgba(23, 134, 255, 0.3);
                 }
 
                 .login-title {
@@ -407,7 +407,7 @@ export default function LoginPage() {
                     font-weight: 900;
                     letter-spacing: -2px;
                     margin: 0;
-                    background: linear-gradient(to right, #fff, #888);
+                    background: linear-gradient(to right, #1786ff, #00c2ff);
                     -webkit-background-clip: text;
                     -webkit-text-fill-color: transparent;
                 }
@@ -520,7 +520,7 @@ export default function LoginPage() {
 
                 .input-wrapper input:focus {
                     outline: none;
-                    border-color: #ff4458;
+                    border-color: #1786ff;
                     background: rgba(255, 255, 255, 0.08);
                 }
 
@@ -538,7 +538,7 @@ export default function LoginPage() {
                     padding: 16px;
                     border-radius: 18px;
                     border: none;
-                    background: linear-gradient(45deg, #ff4458, #ff7854);
+                    background: linear-gradient(45deg, #1786ff, #00c2ff);
                     color: #fff;
                     font-weight: 800;
                     font-size: 16px;
@@ -548,12 +548,12 @@ export default function LoginPage() {
                     justify-content: center;
                     gap: 10px;
                     transition: all 0.3s;
-                    box-shadow: 0 10px 20px rgba(255, 68, 88, 0.2);
+                    box-shadow: 0 10px 20px rgba(23, 134, 255, 0.2);
                 }
 
                 .login-submit-btn:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 15px 30px rgba(255, 68, 88, 0.3);
+                    box-shadow: 0 15px 30px rgba(23, 134, 255, 0.3);
                 }
 
                 .login-submit-btn:disabled {
